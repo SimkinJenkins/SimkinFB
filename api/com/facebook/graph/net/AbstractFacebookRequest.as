@@ -47,7 +47,7 @@ package com.facebook.graph.net {
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 	
-	import net.interalia.core.EtniaFacebookGraph;
+	import net.core.EtniaFacebookGraph;
 	
 	/**
 	 * Base class used when making requests to the graph API.
