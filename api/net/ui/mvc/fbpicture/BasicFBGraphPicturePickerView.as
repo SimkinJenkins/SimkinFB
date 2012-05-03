@@ -114,7 +114,7 @@ package net.ui.mvc.fbpicture {
 			addListener(gallery, ThumbnailEventType.ON_PRESS, onGalleryThumbPress);
 			gallery.initializeGallery($data);
 		}
-		
+
 		protected function onGalleryRender($event:Event):void {
 			var gallery:SimpleGallery = $event.target as SimpleGallery;
 			addListener(gallery, SimpleGallery.ON_GALLERY_RENDER, onGalleryRender, false);

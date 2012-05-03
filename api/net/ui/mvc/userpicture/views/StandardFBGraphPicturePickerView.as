@@ -11,12 +11,14 @@ package net.ui.mvc.userpicture.views {
 	
 	import flash.display.InteractiveObject;
 	import flash.display.MovieClip;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.text.TextField;
 	
+	import net.core.EtniaFacebookGraph;
 	import net.ui.mvc.fbpicture.BasicFriendsFBGraphPicturePickerView;
 	import net.ui.mvc.userpicture.graphics.BigAlbumGraphThumbnail;
 	import net.ui.mvc.userpicture.graphics.SmallGraphThumbnail;
@@ -62,7 +64,11 @@ package net.ui.mvc.userpicture.views {
 		public function set smallGalleryMinThumbsRender($value:int):void {
 			_smallGalleryMinThumbsRender = $value;
 		}
-		
+
+		protected function get titleTxf():TextField {
+			return graphicMC.titleTxf;
+		}
+
 		override protected function get selectButton():InteractiveObject {
 			return graphicMC.selectButton;
 		}
@@ -74,11 +80,15 @@ package net.ui.mvc.userpicture.views {
 		override protected function get myAlbumsButton():InteractiveObject {
 			return graphicMC.myAlbumsButton;
 		}
-		
+
 		override protected function get friendsAlbumsButton():InteractiveObject {
 			return graphicMC.friendsAlbumButton;
 		}
-		
+
+		protected function get changeAlbumButton():SimpleButton {
+			return graphicMC.changeAlbum;
+		}
+
 		protected function get termsChb():MovieClip {
 			return graphicMC.termsChb;
 		}
@@ -91,8 +101,8 @@ package net.ui.mvc.userpicture.views {
 
 		override public function destructor():void {
 			addButtonListeners(false);
-			enableTabButton(myAlbumsButton as MovieClip, false);
-			enableTabButton(friendsAlbumsButton as MovieClip, false);
+			enableTabButton(myAlbumsButton as SimpleButton, false);
+			enableTabButton(friendsAlbumsButton as SimpleButton, false);
 			super.destructor();
 			addElement(myAlbumsButton);
 			addElement(friendsAlbumsButton);
@@ -114,8 +124,8 @@ package net.ui.mvc.userpicture.views {
 				termsChb.buttonMode = true;
 				termsChb.checkBox.gotoAndStop(1);
 			}
-			enableTabButton(myAlbumsButton as MovieClip, false);
-			enableTabButton(friendsAlbumsButton as MovieClip);
+			enableTabButton(myAlbumsButton as SimpleButton, false);
+			enableTabButton(friendsAlbumsButton as SimpleButton);
 		}
 		
 		override protected function getButtonID($button:InteractiveObject):String {
@@ -137,7 +147,8 @@ package net.ui.mvc.userpicture.views {
 			showLoader(false);
 			switch(_model.currentState) {
 				case BasicFBPicturePickerStates.ALBUMS_LOADED:
-																		if(fbPPModel.isMyAlbums){
+																		if(fbPPModel.isMyAlbums) {
+																			titleTxf.text = EtniaFacebookGraph.getInstance().userData.name;
 																			return createBigGallery();
 																		}
 																		break;
@@ -161,7 +172,7 @@ package net.ui.mvc.userpicture.views {
 		override protected function showSelectButton($add:Boolean = true):void {
 			addElement(selectButton, $add, graphicMC);
 		}
-		
+
 		override protected function errorHandler($event:ErrorEvent):void {
 			super.errorHandler($event);
 			trace($event);
@@ -175,28 +186,28 @@ package net.ui.mvc.userpicture.views {
 			super.albumsLoadedHandler();
 		}
 		
-		protected function enableTabButton($mc:MovieClip, $add:Boolean = true):void {
+		protected function enableTabButton($mc:SimpleButton, $add:Boolean = true):void {
 			if(!$mc) {
 				return;
 			}
 			addListener($mc, MouseEvent.MOUSE_OVER, onTabMouseEvent, $add);
 			addListener($mc, MouseEvent.MOUSE_OUT, onTabMouseEvent, false);
 			addListener($mc, MouseEvent.CLICK, onTabMouseEvent, $add);
-			$mc.buttonMode = $add;
-			$mc.useHandCursor = $add;
-			($mc as MovieClip).gotoAndStop($add ? 3 : 1);
+//			$mc.buttonMode = $add;
+//			$mc.useHandCursor = $add;
+//			($mc as MovieClip).gotoAndStop($add ? 3 : 1);
 		}
 		
 		protected function onTabMouseEvent($event:MouseEvent):void {
-			var mc:MovieClip = $event.currentTarget as MovieClip;
+			var mc:SimpleButton = $event.currentTarget as SimpleButton;
 			if($event.type == MouseEvent.CLICK) {
 				enableTabButton(mc, false);
-				enableTabButton(mc == friendsAlbumsButton ? myAlbumsButton as MovieClip : friendsAlbumsButton as MovieClip);
+				enableTabButton(mc == friendsAlbumsButton ? myAlbumsButton as SimpleButton : friendsAlbumsButton as SimpleButton);
 				formController.clickHandler(getButtonID(mc));
 				return;
 			}
 			var mouseOver:Boolean = $event.type == MouseEvent.MOUSE_OVER;
-			mc.gotoAndStop(mouseOver ? 2 : 3);
+//			mc.gotoAndStop(mouseOver ? 2 : 3);
 			addListener(mc, MouseEvent.MOUSE_OVER, onTabMouseEvent, !mouseOver);
 			addListener(mc, MouseEvent.MOUSE_OUT, onTabMouseEvent, mouseOver);
 		}
@@ -218,24 +229,24 @@ package net.ui.mvc.userpicture.views {
 				addElement(graphicMC.left);
 				addElement(graphicMC.right);
 				graphicMC.left.visible = graphicMC.right.visible = true
-				_bigGallery = new ScrollableGallery(StackGalleryTypes.HORIZONTAL_GALLERY, 1);
+				_bigGallery = new ScrollableGallery(StackGalleryTypes.HORIZONTAL_GALLERY, 2);
 				_bigGallery.backgroundClass = SWCBigAlbumThumbnail;
 				_bigGallery.thumbClass =  BigAlbumGraphThumbnail;
 				_bigGallery.adjustImage = true;
 				_bigGallery.minThumbsRender = _bigGalleryMinThumbsRender;
 				_bigGallery.paddingX = 13;
-				_bigGallery.paddingY = 13;
+				_bigGallery.paddingY = 3;
 				_bigGallery.x = _galleryX;
 				_bigGallery.y = _galleryY;
 				_bigGallery.selectorColor = _selectorColor;
 				_bigGallery.visibleWidth = _galleryW;
-				_bigGallery.visibleHeight = 165;
+				_bigGallery.visibleHeight = 200;
 				_bigGallery.posArrows = false;
 				_bigGallery.left = graphicMC.left;
 				_bigGallery.right = graphicMC.right;
 				_bigGallery.loaderClass = _loaderClass;
 				_bigGallery.visible = true;
-				addContainerMask(_bigGallery);
+//				addContainerMask(_bigGallery);
 			}
 			return _bigGallery;
 		}
@@ -243,7 +254,7 @@ package net.ui.mvc.userpicture.views {
 		protected function addContainerMask($container:Sprite):void {
 			var mask:Sprite = new Sprite();
 			mask.graphics.beginFill(0, .5);
-			mask.graphics.drawRect(0, 0, this.width, this.height);
+			mask.graphics.drawRect(0, 0, _galleryW, 300);
 			addElement(mask);
 			$container.mask = mask;
 		}
@@ -256,7 +267,7 @@ package net.ui.mvc.userpicture.views {
 				_smallGallery.paddingX = 3;
 				_smallGallery.minThumbsRender = _smallGalleryMinThumbsRender;
 				_smallGallery.paddingY = 3;
-				_smallGallery.x = _galleryX + 13;
+				_smallGallery.x = _galleryX;
 				_smallGallery.y = _galleryY;
 				_smallGallery.selectorColor = _selectorColor;
 				_smallGallery.adjustImage = true;

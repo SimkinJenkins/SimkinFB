@@ -59,7 +59,6 @@ package net {
 		public const READ_INSIGHTS:String = "read_insights";
 		public const READ_MAILBOX:String = "read_mailbox";
 		public const READ_REQUEST:String = "read_requests";
-		public const READ_STREAM:String = "read_stream";
 		public const XMPP_LOGIN:String = "xmpp_login";
 		public const ADDS_MANAGEMENT:String = "ads_management";
 		

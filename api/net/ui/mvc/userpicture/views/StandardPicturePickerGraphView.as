@@ -25,8 +25,8 @@ package net.ui.mvc.userpicture.views {
 		protected var _preview:Sprite;
 		protected var _previewMask:Sprite;
 		protected var _loader:MovieClip;
-		protected var _fbGalleryX:Number = 135;
-		protected var _fbGalleryY:Number = 353;
+		protected var _fbGalleryX:Number = 20;
+		protected var _fbGalleryY:Number = 20;
 		protected var _fbGalleryW:Number = 480;
 		protected var _webCamContainerPosition:ComplexPoint;
 		protected var _gallerySelectorColor:uint = 0xFFCC00;

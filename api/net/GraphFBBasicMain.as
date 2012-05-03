@@ -84,7 +84,7 @@ package net {
 		}
 
 		protected function sendLogin():void {
-			_facebook.facebookLogin(new Array(_facebook.USER_PHOTOS, _facebook.FRIENDS_PHOTOS, _facebook.READ_STREAM));
+			_facebook.facebookLogin(new Array(_facebook.USER_PHOTOS, _facebook.FRIENDS_PHOTOS));
 		}
 
 		protected function onLoginSuccess($event:EtniaFacebookConnectLoginEvent):void {
