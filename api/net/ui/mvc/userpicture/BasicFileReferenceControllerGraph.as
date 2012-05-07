@@ -56,7 +56,7 @@ package net.ui.mvc.userpicture {
 		override public function destructor():void {
 			super.destructor();
 			configureListeners(_fileReference, false);
-			fileReferenceModel.terms = false;
+//			fileReferenceModel.terms = false;
 		}
 		
 		protected function toggleTerms():void {
