@@ -113,6 +113,8 @@ package net.ui.mvc.userpicture.views {
 		}
 		
 		public function init():void {
+			showSelectButton(false);
+			graphicMC.gotoAndStop("mine");
 			formController.clickHandler(getButtonID(myAlbumsButton));
 			showLoader();
 		}
@@ -193,9 +195,6 @@ package net.ui.mvc.userpicture.views {
 			addListener($mc, MouseEvent.MOUSE_OVER, onTabMouseEvent, $add);
 			addListener($mc, MouseEvent.MOUSE_OUT, onTabMouseEvent, false);
 			addListener($mc, MouseEvent.CLICK, onTabMouseEvent, $add);
-//			$mc.buttonMode = $add;
-//			$mc.useHandCursor = $add;
-//			($mc as MovieClip).gotoAndStop($add ? 3 : 1);
 		}
 		
 		protected function onTabMouseEvent($event:MouseEvent):void {
@@ -204,10 +203,10 @@ package net.ui.mvc.userpicture.views {
 				enableTabButton(mc, false);
 				enableTabButton(mc == friendsAlbumsButton ? myAlbumsButton as SimpleButton : friendsAlbumsButton as SimpleButton);
 				formController.clickHandler(getButtonID(mc));
+				graphicMC.gotoAndStop(mc == myAlbumsButton ? "mine" : "friends");
 				return;
 			}
 			var mouseOver:Boolean = $event.type == MouseEvent.MOUSE_OVER;
-//			mc.gotoAndStop(mouseOver ? 2 : 3);
 			addListener(mc, MouseEvent.MOUSE_OVER, onTabMouseEvent, !mouseOver);
 			addListener(mc, MouseEvent.MOUSE_OUT, onTabMouseEvent, mouseOver);
 		}
@@ -258,7 +257,7 @@ package net.ui.mvc.userpicture.views {
 			addElement(mask);
 			$container.mask = mask;
 		}
-		
+
 		protected function createSmallGallery():ScrollableGallery {
 			if(!_smallGallery) {
 				_smallGallery = new ScrollableGallery(StackGalleryTypes.HORIZONTAL_GALLERY, 2);
@@ -271,14 +270,15 @@ package net.ui.mvc.userpicture.views {
 				_smallGallery.y = _galleryY;
 				_smallGallery.selectorColor = _selectorColor;
 				_smallGallery.adjustImage = true;
-				_smallGallery.visibleWidth = _galleryW - 25;
+				_smallGallery.visibleWidth = _galleryW;
 				_smallGallery.visibleHeight = 165;
+
 				_smallGallery.posArrows = false;
 				_smallGallery.left = graphicMC.left;
 				_smallGallery.right = graphicMC.right;
 				_smallGallery.loaderClass = _loaderClass;
 				_smallGallery.visible = true;
-				addContainerMask(_smallGallery);
+//				addContainerMask(_smallGallery);
 			}
 			return _smallGallery;
 		}

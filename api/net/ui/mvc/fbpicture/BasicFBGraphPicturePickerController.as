@@ -31,7 +31,6 @@ package net.ui.mvc.fbpicture {
 			if($ID != BasicFormStates.ON_CANCEL_BTN && !testFBSession()) {
 				return;
 			}
-			super.clickHandler($ID);
 			switch($ID) {
 				case BasicFBPicturePickerStates.MY_ALBUMS_BTN:		getAlbums();			break;
 				case BasicFBPicturePickerStates.SELECT_BTN:			onSelectButtonClick();	break;
@@ -42,7 +41,7 @@ package net.ui.mvc.fbpicture {
 				case BasicFBPicturePickerStates.PHOTO_UPLOAD: 		uploadPhoto();	 		break;
 				case BasicFBPicturePickerStates.TERMS:				toggleTerms();			break;
 			}
-			trace($ID);
+			super.clickHandler($ID);
 		}
 		
 		protected function testFBSession():Boolean {

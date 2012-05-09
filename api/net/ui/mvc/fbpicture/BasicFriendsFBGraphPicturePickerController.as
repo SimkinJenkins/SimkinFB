@@ -36,12 +36,14 @@ package net.ui.mvc.fbpicture {
 						break;
 					case BasicFBPicturePickerStates.PHOTOS_DATA_LOADED:
 					case BasicFBPicturePickerStates.PHOTO_SELECTED:
-						if(fbPPModel.currentFriend){
+						if(fbPPModel.currentFriend) {
 							_model.setState(BasicFBPicturePickerStates.FRIEND_ALBUM_LOADED);
 							super.clickHandler(BasicFBPicturePickerStates.ALBUM_SELECTED);
-						}else{
+							return;
+						} else {
 							_model.setState(BasicFBPicturePickerStates.MY_ALBUMS_BTN);
 							super.clickHandler(BasicFBPicturePickerStates.MY_ALBUMS_BTN);
+							return;
 						}
 						break;
 					default:
@@ -49,7 +51,6 @@ package net.ui.mvc.fbpicture {
 						break;
 				}
 			}
-			trace(BasicFBPicturePickerStates.FRIENDS_ALBUMS_BTN);
 			switch($ID) {
 				case BasicFBPicturePickerStates.FRIENDS_ALBUMS_BTN:					getFriendList();		break;
 			}

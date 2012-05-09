@@ -138,7 +138,7 @@ package net.ui.mvc.userpicture.views {
 		
 		override protected function setWebcamPictureView():void {
 			var view:StandardWebcamView = new StandardWebcamView(userPickerModel.webcamPicModel,
-				userPickerModel.selectFileController, new Sprite());
+				userPickerModel.selectFileController, _graphics.webcamGraphic);
 			
 			view.webCamPreviewPosition = _webCamPreviewPosition;
 			view.webCamContainerPosition = _webCamContainerPosition;
