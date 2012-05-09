@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.facebook.graph.net {
 	
 	import com.adobe.images.PNGEncoder;
-	import com.adobe.serialization.json.JSONManager;
+	import com.adobe.serialization.json.JSON;
 	import com.facebook.graph.utils.PostRequest;
 	
 	import flash.display.Bitmap;
@@ -46,8 +46,6 @@ package com.facebook.graph.net {
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
-	
-	import net.core.EtniaFacebookGraph;
 	
 	/**
 	 * Base class used when making requests to the graph API.
@@ -262,7 +260,7 @@ package com.facebook.graph.net {
 			_success = true;
 			
 			try {
-				_data = JSONManager.decode(_rawResult);
+				_data = JSON.decode(_rawResult);
 			} catch (e:*) {
 				_data = _rawResult;
 				_success = false;
@@ -289,10 +287,7 @@ package com.facebook.graph.net {
 		 *
 		 */
 		protected function dispatchComplete():void {
-			if (_callback != null) {
-				EtniaFacebookGraph.getInstance().accessToken = urlRequest.data.access_token;
-				_callback(this);
-			}
+			if (_callback != null) { _callback(this); }
 			close();
 		}
 		
@@ -310,7 +305,7 @@ package com.facebook.graph.net {
 			
 			if (_rawResult != '') {
 				try {
-					_data = JSONManager.decode(_rawResult);
+					_data = JSON.decode(_rawResult);
 				} catch (e:*) {
 					_data = {type:'Exception', message:_rawResult};
 				}
@@ -330,7 +325,7 @@ package com.facebook.graph.net {
 			_rawResult = (event.target as URLLoader).data;
 			
 			try {
-				_data = JSONManager.decode((event.target as URLLoader).data);
+				_data = JSON.decode((event.target as URLLoader).data);
 			} catch (e:*) {
 				_data = event;
 			}

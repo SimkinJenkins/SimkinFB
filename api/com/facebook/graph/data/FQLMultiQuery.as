@@ -31,9 +31,8 @@
 */
 
 package com.facebook.graph.data {
-
-	import com.adobe.serialization.json.JSONManager;
-
+	import com.adobe.serialization.json.JSON;
+	
 	/**
 	 * VO to hold multiple queries for use in Facebook.fqlMultiQuery
 	 *
@@ -78,7 +77,7 @@ package com.facebook.graph.data {
 		 * 
 		 */		
 		public function toString():String {
-			return JSONManager.encode(queries);			
+			return JSON.encode(queries);			
 		}
 	}
 }

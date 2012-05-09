@@ -30,7 +30,8 @@ package net.ui.controllers {
 		}
 
 		public function sendImage($image:DisplayObject):void {
-			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/", $image, sendImageCompleted);
+//			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/", $image, sendImageCompleted);
+			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + "678766103" + "/", $image, sendImageCompleted);
 		}
 
 		protected function sendImageCompleted($event:Event):void {

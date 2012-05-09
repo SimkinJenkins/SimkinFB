@@ -68,7 +68,7 @@ package com.facebook.graph.core {
 							},
 								
 							init: function( opts ) {
-								var options = FB.JSON.parse( opts );
+								var options = JSON.parse( opts );
 								FB.init( options );
 								FB.Event.subscribe( 'auth.authResponseChange', function( response ) {
 									FBAS.updateSwfAuthResponse( response.authResponse );
@@ -84,12 +84,12 @@ package com.facebook.graph.core {
 							},
 								
 							login: function( opts ) {
-								FB.login( FBAS.handleUserLogin, FB.JSON.parse( opts ) );
+								FB.login( FBAS.handleUserLogin, JSON.parse( opts ) );
 							},
 								
 							addEventListener: function( event ) {
 								FB.Event.subscribe( event, function( response ) {
-									FBAS.getSwf().handleJsEvent( event, FB.JSON.stringify( response ) );
+									FBAS.getSwf().handleJsEvent( event, JSON.stringify( response ) );
 								} );
 							},
 								
@@ -107,15 +107,15 @@ package com.facebook.graph.core {
 							},
 								
 							ui: function( params ) {
-								obj = FB.JSON.parse( params );								
+								obj = JSON.parse( params );								
 								method = obj.method;
-								cb = function( response ) { FBAS.getSwf().uiResponse( FB.JSON.stringify( response ), method ); }
+								cb = function( response ) { FBAS.getSwf().uiResponse( JSON.stringify( response ), method ); }
 								FB.ui( obj, cb );
 							},
 							
 							getAuthResponse: function() {
 								authResponse = FB.getAuthResponse();
-								return FB.JSON.stringify( authResponse );
+								return JSON.stringify( authResponse );
 							},
 			
 							getLoginStatus: function() {
@@ -138,7 +138,7 @@ package com.facebook.graph.core {
 								if( response == null ) {
 									swf.authResponseChange( null );
 								} else {
-									swf.authResponseChange( FB.JSON.stringify( response ) );
+									swf.authResponseChange( JSON.stringify( response ) );
 								}
 							}
 						};
