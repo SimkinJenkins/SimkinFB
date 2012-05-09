@@ -1,14 +1,15 @@
-package net.interalia.teleton.iu.controllers {
+package net.ui.controllers {
 
 	import com.adobe.images.PNGEncoder;
 	import com.adobe.net.URI;
-	import com.etnia.core.config.URLManager;
-	import com.etnia.net.EtniaDataSender;
-	import com.etnia.net.EtniaLoaderEvent;
-	import com.etnia.net.EtniaServerResponse;
-	import com.etnia.utils.GraphicUtils;
+	import com.core.config.URLManager;
 	import com.facebook.graph.Facebook;
-	
+	import com.net.BasicLoaderEvent;
+	import com.net.DataSender;
+	import com.net.ServerResponse;
+	import com.ui.controllers.TransactionController;
+	import com.utils.GraphicUtils;
+
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -18,23 +19,23 @@ package net.interalia.teleton.iu.controllers {
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 	
-	import net.interalia.etnia.ui.controllers.EtniaTransactionController;
-
-	public class SPUploadFBPhoto extends EtniaTransactionController {
+	import net.core.EtniaFacebookGraph;
+	
+	public class UploadFBPhoto extends TransactionController {
 
 		public static const SEND_IMAGE_COMPLETE:String = "sendImageCompleted";	
 
-		public function SPUploadFBPhoto($container:Sprite) {
+		public function UploadFBPhoto($container:Sprite) {
 			super($container);
 		}
 
 		public function sendImage($image:DisplayObject):void {
-//			sendSaveBitmapData(URLManager.getInstance().getPath("sendImageService") + "?access=" + encodeURIComponent(Facebook.getSession().accessToken), $image, sendImageCompleted);
+			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/", $image, sendImageCompleted);
 		}
 
 		protected function sendImageCompleted($event:Event):void {
-			var data:EtniaServerResponse = EtniaDataSender.getJSONServerResponse(($event.target as URLLoader).data);
-			dispatchEvent(new EtniaLoaderEvent(SEND_IMAGE_COMPLETE, "", 0, 0, 0, null, data));
+			var data:ServerResponse = DataSender.getJSONServerResponse(($event.target as URLLoader).data);
+			dispatchEvent(new BasicLoaderEvent(SEND_IMAGE_COMPLETE, "", 0, 0, 0, null, data));
 		}
 
 		protected function sendSaveBitmapData($url:String, $do:DisplayObject, $complete:Function):void {
