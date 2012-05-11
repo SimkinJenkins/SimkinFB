@@ -3,6 +3,7 @@ package net.ui.controllers {
 	import com.adobe.images.PNGEncoder;
 	import com.adobe.net.URI;
 	import com.core.config.URLManager;
+	import com.dynamicflash.util.Base64;
 	import com.facebook.graph.Facebook;
 	import com.net.BasicLoaderEvent;
 	import com.net.DataSender;
@@ -18,9 +19,9 @@ package net.ui.controllers {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
-	
+
 	import net.core.EtniaFacebookGraph;
-	
+
 	public class UploadFBPhoto extends TransactionController {
 
 		public static const SEND_IMAGE_COMPLETE:String = "sendImageCompleted";	
@@ -30,8 +31,8 @@ package net.ui.controllers {
 		}
 
 		public function sendImage($image:DisplayObject):void {
-//			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/", $image, sendImageCompleted);
-			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + "678766103" + "/", $image, sendImageCompleted);
+			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/" + "?access=" + Base64.encode(Facebook.getInstance().accessToken), $image, sendImageCompleted);
+//			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + "678766103" + "/", $image, sendImageCompleted);
 		}
 
 		protected function sendImageCompleted($event:Event):void {
