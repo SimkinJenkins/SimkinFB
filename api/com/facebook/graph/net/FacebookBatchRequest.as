@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.facebook.graph.net {
 	
 	import com.adobe.images.PNGEncoder;
-	import com.adobe.serialization.json.JSON;
+	import com.adobe.serialization.json.JSONController;
 	import com.facebook.graph.core.FacebookURLDefaults;
 	import com.facebook.graph.data.Batch;
 	import com.facebook.graph.data.BatchItem;
@@ -139,7 +139,7 @@ package com.facebook.graph.net {
 			if (!hasFiles) {
 				var requestVars:URLVariables = new URLVariables();
 				requestVars.access_token = accessToken;
-				requestVars.batch = JSON.encode(formatted);
+				requestVars.batch = JSONController.encode(formatted);
 				
 				urlRequest.data = requestVars;
 				
@@ -152,7 +152,7 @@ package com.facebook.graph.net {
 		protected function sendPostRequest(requests:Array, files:Array):void {
 			var post:PostRequest = new PostRequest();
 			post.writePostData('access_token', _accessToken);
-			post.writePostData('batch', JSON.encode(requests));
+			post.writePostData('batch', JSONController.encode(requests));
 			
 			var l:uint = requests.length;
 			
@@ -192,7 +192,7 @@ package com.facebook.graph.net {
 			
 			for (var i:uint=0;i<l;i++) {
 				//We need to decode the nested body data before passing it back.
-				var body:Object = JSON.decode(_data[i].body);
+				var body:Object = JSONController.decode(_data[i].body);
 				_data[i].body = body;
 				
 				//If this batch has its own callback, call it now, and pass the data to it.
