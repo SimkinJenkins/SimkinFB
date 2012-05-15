@@ -92,7 +92,7 @@ package net {
 			SiteAlertManager.getInstance().closeAlert();
 			if(!EtniaFacebookGraph.getInstance().userData) {
 				EtniaFacebookGraph.getInstance().userData = _facebook.dataObject;
-			}
+			}	
 			transactionComplete();
 		}
 		

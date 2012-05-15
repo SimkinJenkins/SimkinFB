@@ -20,7 +20,7 @@ package net.ui.controllers {
 	import flash.net.URLRequestMethod;
 	
 	import net.core.EtniaFacebookGraph;
-	
+
 	public class UploadFBPhoto extends TransactionController {
 
 		public static const SEND_IMAGE_COMPLETE:String = "sendImageCompleted";	
