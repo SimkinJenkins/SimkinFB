@@ -41,7 +41,7 @@ package net.ui.mvc.fbpicture {
 							super.clickHandler(BasicFBPicturePickerStates.ALBUM_SELECTED);
 							return;
 						} else {
-							_model.setState(BasicFBPicturePickerStates.MY_ALBUMS_BTN);
+							_model.setState(BasicFBPicturePickerStates.LOADING_ALBUMS);
 							super.clickHandler(BasicFBPicturePickerStates.MY_ALBUMS_BTN);
 							return;
 						}

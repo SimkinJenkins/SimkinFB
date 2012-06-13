@@ -135,16 +135,10 @@ package net.ui.mvc.userpicture.views {
 			showMenu();
 			addButtonListeners();
 		}
-		
+
 		override protected function setWebcamPictureView():void {
 			var view:StandardWebcamView = new StandardWebcamView(userPickerModel.webcamPicModel,
 				userPickerModel.selectFileController, _graphics.webcamGraphic);
-			
-			view.webCamPreviewPosition = _webCamPreviewPosition;
-			view.webCamContainerPosition = _webCamContainerPosition;
-			view.previewMask = _previewMask;
-			view.preview = _preview;
-			
 			view.init();
 			addView(view);
 		}
@@ -199,7 +193,7 @@ package net.ui.mvc.userpicture.views {
 			if(!_loader) {
 				_loader = new GraphicInfinitLoader();
 				_loader.x = 200;
-				_loader.y = 150;
+				_loader.y = 50;
 			}
 			addElement(_loader, $add);
 		}

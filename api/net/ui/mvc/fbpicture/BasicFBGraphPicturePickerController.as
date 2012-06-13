@@ -10,6 +10,7 @@ package net.ui.mvc.fbpicture {
 	
 	import flash.display.Loader;
 	import flash.events.Event;
+	import flash.profiler.showRedrawRegions;
 	import flash.system.Security;
 	
 	import net.core.EtniaFacebookGraph;
@@ -32,7 +33,8 @@ package net.ui.mvc.fbpicture {
 				return;
 			}
 			switch($ID) {
-				case BasicFBPicturePickerStates.MY_ALBUMS_BTN:		getAlbums();			break;
+				case BasicFBPicturePickerStates.MY_ALBUMS_BTN:		_model.setState(BasicFBPicturePickerStates.INIT);
+																	getAlbums();			break;
 				case BasicFBPicturePickerStates.SELECT_BTN:			onSelectButtonClick();	break;
 				
 				case BasicFBPicturePickerStates.INIT: 				initialize(); 			break;
@@ -43,7 +45,7 @@ package net.ui.mvc.fbpicture {
 			}
 			super.clickHandler($ID);
 		}
-		
+
 		protected function testFBSession():Boolean {
 //			if(!Facebook.getSession().accessToken) {
 //				_model.setError(BasicFBPicturePickerStates.FB_SESSION_ERROR);

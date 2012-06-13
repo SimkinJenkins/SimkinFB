@@ -14,6 +14,7 @@ package net.ui.mvc.userpicture.views {
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.text.TextField;
@@ -118,7 +119,16 @@ package net.ui.mvc.userpicture.views {
 			formController.clickHandler(getButtonID(myAlbumsButton));
 			showLoader();
 		}
-		
+
+		protected function setMask():void {
+			var sprite:Sprite = new Sprite();
+			sprite.graphics.beginFill(0, .5);
+			sprite.graphics.drawRect(256, 72, 475, 222);
+			sprite.graphics.endFill();
+			_bigGallery.mask = sprite;
+			addElement(sprite);
+		}
+
 		override protected function initGraphic():void {
 			addButtonListeners();
 			if(termsChb) {
@@ -172,6 +182,9 @@ package net.ui.mvc.userpicture.views {
 		}
 		
 		override protected function showSelectButton($add:Boolean = true):void {
+			selectButton.visible = $add;
+			selectButton.alpha = $add ? 1 : 0;
+			addListener(selectButton, MouseEvent.CLICK, clickHandler, $add);
 			addElement(selectButton, $add, graphicMC);
 		}
 
@@ -188,6 +201,23 @@ package net.ui.mvc.userpicture.views {
 			super.albumsLoadedHandler();
 		}
 		
+		override protected function addGallery($data:Array):void {
+			super.addGallery($data);
+			if($data.length == 0) {
+				titleTxf.text = "No hay fotos disponibles";
+			}
+		}
+
+		override protected function stateUpdate($event:Event):void {
+			super.stateUpdate($event);
+			switch(_model.currentState) {
+				case BasicFBPicturePickerStates.INIT:
+				case BasicFBPicturePickerStates.FRIENDS_LOADING:
+				case BasicFBPicturePickerStates.LOADING_ALBUMS:			showSelectButton(false);
+																		showLoader();				break;
+			}
+		}
+
 		protected function enableTabButton($mc:SimpleButton, $add:Boolean = true):void {
 			if(!$mc) {
 				return;
@@ -245,6 +275,7 @@ package net.ui.mvc.userpicture.views {
 				_bigGallery.right = graphicMC.right;
 				_bigGallery.loaderClass = _loaderClass;
 				_bigGallery.visible = true;
+				setMask();
 //				addContainerMask(_bigGallery);
 			}
 			return _bigGallery;
@@ -272,7 +303,6 @@ package net.ui.mvc.userpicture.views {
 				_smallGallery.adjustImage = true;
 				_smallGallery.visibleWidth = _galleryW;
 				_smallGallery.visibleHeight = 165;
-
 				_smallGallery.posArrows = false;
 				_smallGallery.left = graphicMC.left;
 				_smallGallery.right = graphicMC.right;
