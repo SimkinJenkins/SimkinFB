@@ -10,7 +10,7 @@ package net.ui.controllers {
 	import com.net.ServerResponse;
 	import com.ui.controllers.TransactionController;
 	import com.utils.GraphicUtils;
-
+	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -19,7 +19,7 @@ package net.ui.controllers {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
-
+	
 	import net.core.EtniaFacebookGraph;
 
 	public class UploadFBPhoto extends TransactionController {
@@ -30,7 +30,7 @@ package net.ui.controllers {
 			super($container);
 		}
 
-		public function sendImage($image:DisplayObject):void {
+		public function sendImage($image:DisplayObject, $text:String = ""):void {
 			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/" + "?access=" + Base64.encode(Facebook.getInstance().accessToken), $image, sendImageCompleted);
 //			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + "678766103" + "/", $image, sendImageCompleted);
 		}
