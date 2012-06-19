@@ -31,7 +31,7 @@ package net.ui.controllers {
 		}
 
 		public function sendImage($image:DisplayObject, $text:String = ""):void {
-			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/" + "?access=" + Base64.encode(Facebook.getInstance().accessToken), $image, sendImageCompleted);
+			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + EtniaFacebookGraph.getInstance().userData.id + "/" + "?access=" + Base64.encode(Facebook.getInstance().accessToken) + "&pie_pagina=" + $text, $image, sendImageCompleted);
 //			sendSaveBitmapData(URLManager.getInstance().getPath("uploadPhotoDir") + "678766103" + "/", $image, sendImageCompleted);
 		}
 
