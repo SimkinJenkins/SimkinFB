@@ -6,6 +6,7 @@ package net.ui.mvc.userpicture.views {
 	import com.ui.controllers.mvc.interfaces.IController;
 	import com.ui.controllers.mvc.interfaces.IModel;
 	import com.ui.controllers.mvc.interfaces.IView;
+	import com.ui.controllers.mvc.userpicture.UserPicturePickerStates;
 	import com.ui.controllers.mvc.userpicture.views.StandardWebcamView;
 	
 	import flash.display.InteractiveObject;
@@ -171,6 +172,9 @@ package net.ui.mvc.userpicture.views {
 		
 		override protected function stateUpdate($event:Event):void {
 			super.stateUpdate($event);
+			if(_model.currentState != UserPicturePickerStates.HOME && _model.currentState != BasicFormStates.FINISHED) {
+				(webCamPicButton as MovieClip).gotoAndStop(1);
+			}
 			showLoader(_model.currentState == BasicFormStates.LOADING);
 		}
 		

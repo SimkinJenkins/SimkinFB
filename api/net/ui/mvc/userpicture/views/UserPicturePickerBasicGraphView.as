@@ -52,7 +52,7 @@ package net.ui.mvc.userpicture.views {
 			_webCamPicButton = getButton("Usa tu webcam", 100, 140);
 			_cancelButton = getButton("Cancelar", 100, 160);
 		}
-		
+
 		override protected function stateUpdate($event:Event):void {
 			switch(_model.currentState) {
 				case UserPicturePickerStates.HOME:				showMenu();				break;
