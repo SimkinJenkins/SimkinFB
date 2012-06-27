@@ -56,7 +56,6 @@ package net.ui.mvc.userpicture {
 		override public function destructor():void {
 			super.destructor();
 			configureListeners(_fileReference, false);
-//			fileReferenceModel.terms = false;
 		}
 		
 		protected function toggleTerms():void {
@@ -69,23 +68,18 @@ package net.ui.mvc.userpicture {
 				return;
 			}
 			try {
-				
 				var vars:URLVariables = new URLVariables();
-				//vars.usuario = EtniaFacebook.getInstance().user.uid;
 				var request:URLRequest = new URLRequest(fileReferenceModel.serverUploadURL);
 				request.method = URLRequestMethod.POST;
 				request.data = vars;
-				
-				//_fileReference.upload(request, fileReferenceModel.serverUploadFilename);
-				// Fanta
 				_fileReference.load(); 
 				_model.setState(BasicFileReferenceStates.LOADING_FILE);
 			} catch ($error:Error) {
 				trace($error);
-				_model.setError(BasicFileReferenceStates.UPLOAD_ERROR, $error.toString());
+//				_model.setError(BasicFileReferenceStates.UPLOAD_ERROR, $error.toString());
 			}
 		}
-		
+
 		protected function selectClickHandler():void {
 			createFileReference(_fileFilter);
 		}
@@ -93,7 +87,7 @@ package net.ui.mvc.userpicture {
 		protected function changeClickHandler():void {
 			_fileReference.browse(_fileFilter ? [_fileFilter] : null);
 		}
-		
+
 		protected function createFileReference($filter:FileFilter):void {
 			if(_fileReference) {
 				configureListeners(_fileReference, false);

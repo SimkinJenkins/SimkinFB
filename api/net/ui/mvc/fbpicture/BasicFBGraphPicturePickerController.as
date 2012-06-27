@@ -46,12 +46,30 @@ package net.ui.mvc.fbpicture {
 			super.clickHandler($ID);
 		}
 
+		public function getAlbums($userID:String = null):void {
+			fbPPModel.isMyAlbums = true;
+			if(fbPPModel.albums) {
+				fbPPModel.currentCover = 0;
+				getAlbumCover(fbPPModel.albums[fbPPModel.currentCover]);
+			} else {
+				fbPPModel.currentFriend = null;
+				if(_model.currentState != BasicFBPicturePickerStates.LOADING_ALBUMS) {
+					fbPPModel.uid = EtniaFacebookGraph.getInstance().userData.id;
+					Facebook.api("/me/albums", handleGetAlbumsResponse);
+					_model.setState(BasicFBPicturePickerStates.LOADING_ALBUMS);
+				}
+			}
+		}
+		
+		public function getNextCoverAlbum():void {
+			if(fbPPModel.currentCover < fbPPModel.albums.length - 1 && fbPPModel.isMyAlbums) {
+				fbPPModel.currentCover++;
+				fbPPModel.currentRetry = 0;
+				getCurrentCoverAlbum();
+			}
+		}
+
 		protected function testFBSession():Boolean {
-//			if(!Facebook.getSession().accessToken) {
-//				_model.setError(BasicFBPicturePickerStates.FB_SESSION_ERROR);
-//				_model.setState(BasicFormStates.CANCELING);
-//				return false;
-//			}
 			return true;
 		}
 		
@@ -89,35 +107,15 @@ package net.ui.mvc.fbpicture {
 		protected function uploadPhoto():void {
 			_model.setState(BasicFBPicturePickerStates.PHOTO_UPLOAD);
 		}
-		
-		public function getAlbums($userID:String = null):void {
-			fbPPModel.isMyAlbums = true;
-			if(fbPPModel.albums) {
-				_currentCover = 0;
-				fbPPModel.currentCover = 0;
-				getAlbumCover(fbPPModel.albums[_currentCover]);
-//				_model.setState(BasicFBPicturePickerStates.ALBUMS_LOADED);
-			} else {
-				fbPPModel.currentFriend = null;
-				if(_model.currentState != BasicFBPicturePickerStates.LOADING_ALBUMS) {
-					fbPPModel.uid = EtniaFacebookGraph.getInstance().userData.id;//Facebook.getSession().uid;
-					Facebook.api("/me/albums", handleGetAlbumsResponse);
-					_model.setState(BasicFBPicturePickerStates.LOADING_ALBUMS);
-				}
-			}
-		}
-		
-		protected var _currentCover:uint = 0;
-		
+
 		protected function handleGetAlbumsResponse($result:Object, $fail:Object):void{
 			if($result) {
 				fbPPModel.albums = new Array();
-				_currentCover = 0
 				fbPPModel.currentCover = 0;
 				for(var i:uint = 0; i < $result.length; i++) {
 					fbPPModel.albums.push(new AlbumData($result[i]));
 				}
-				getAlbumCover(fbPPModel.albums[_currentCover]);
+				getAlbumCover(fbPPModel.albums[fbPPModel.currentCover]);
 			} else {
 				_model.setError("Error al pedir los álbumes");
 			}
@@ -133,8 +131,7 @@ package net.ui.mvc.fbpicture {
 		
 		protected function onGetAlbumCover($result:Object, $fail:Object):void {
 			if($result) {
-				(fbPPModel.albums[_currentCover] as AlbumData).coverDetail = new PhotoData($result);
-				getNextCoverAlbum();
+				setCurrentCoverData($result);
 			} else {
 				if(fbPPModel.currentRetry < fbPPModel.retries) {
 					fbPPModel.currentRetry++;
@@ -145,20 +142,14 @@ package net.ui.mvc.fbpicture {
 				}
 			}
 		}
-		
-		protected function getNextCoverAlbum():void {
-			if(_currentCover < fbPPModel.albums.length - 1 && fbPPModel.isMyAlbums) {
-				_currentCover++;
-				fbPPModel.currentCover++;
-				fbPPModel.currentRetry = 0;
-				getCurrentCoverAlbum();
-			} else {
-				_model.setState(BasicFBPicturePickerStates.ALBUMS_LOADED);
-			}
+
+		protected function setCurrentCoverData($result:Object):void {
+			(fbPPModel.albums[fbPPModel.currentCover] as AlbumData).coverDetail = new PhotoData($result);
+			getNextCoverAlbum();
 		}
 
 		protected function getCurrentCoverAlbum():void {
-			getAlbumCover(fbPPModel.albums[_currentCover]);
+			getAlbumCover(fbPPModel.albums[fbPPModel.currentCover]);
 		}
 
 		protected function onGetPhotosError($event:Event):void {//FacebookEvent):void {
@@ -195,19 +186,6 @@ package net.ui.mvc.fbpicture {
 				_model.setError("Error al pedir las fotos del álbum seleccionado");
 			}
 		}
-		
-		protected function onFacebookError($event:Event):void {//FacebookEvent):void {
-			_model.setError(BasicFBPicturePickerStates.PHOTOS_LOAD_ERROR, "Loading facebook data Error");
-		}
-		
-		protected function sendNote($call:*/*FacebookCall*/, $completeListener:Function, $errorListener:Function = null):void {
-			//			var call:* = EtniaFacebook.getInstance().fb.post($call);
-			//			call.addEventListener(FacebookEvent.COMPLETE, $completeListener);
-			//			call.addEventListener(FacebookEvent.ERROR, $errorListener == null ? onFacebookFailure : $errorListener);
-		}
-		
-		protected function onFacebookFailure($event:Event):void {//FacebookEvent):void {
-			_model.setError(BasicFBPicturePickerStates.FB_ERROR);
-		}
+
 	}
 }

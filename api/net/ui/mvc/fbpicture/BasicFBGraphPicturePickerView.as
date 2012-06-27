@@ -125,7 +125,8 @@ package net.ui.mvc.fbpicture {
 		protected function onGalleryThumbPress($event:ThumbnailEvent):void {
 			switch(_model.currentState) {
 				case BasicFBPicturePickerStates.ALBUM_SELECTED:	
-				case BasicFBPicturePickerStates.ALBUMS_LOADED:			fbPPController.setSelectedAlbum($event);	break; // primer album selecto
+				case BasicFBPicturePickerStates.ALBUMS_LOADED:
+				case BasicFBPicturePickerStates.ALBUM_DATA_LOADED:		fbPPController.setSelectedAlbum($event);	break; // primer album selecto
 				case BasicFBPicturePickerStates.PHOTOS_LOADED:
 				case BasicFBPicturePickerStates.PHOTO_SELECTED:
 				case BasicFBPicturePickerStates.PHOTOS_DATA_LOADED:		fbPPController.setSelectedPhoto($event);	break; // primer foto selecta despues de data
@@ -172,8 +173,11 @@ package net.ui.mvc.fbpicture {
 		protected function removeGalleries():void {
 			destructGallery(_gallery);
 		}
-		
+
 		public function destructGallery($gallery:SimpleGallery):void {
+			if($gallery) {
+				$gallery.destructor();
+			}
 			addListener($gallery, SimpleGallery.ON_GALLERY_RENDER, onGalleryRender, false);
 			addListener($gallery, SimpleGallery.ON_GALLERY_FULL_LOADED, onGalleryRender, false);
 			addListener($gallery, ThumbnailEventType.ON_PRESS, onGalleryThumbPress, false);

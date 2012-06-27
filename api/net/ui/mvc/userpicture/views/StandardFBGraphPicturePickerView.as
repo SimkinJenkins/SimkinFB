@@ -1,14 +1,20 @@
 package net.ui.mvc.userpicture.views {
 	
 
+	import com.graphics.gallery.IThumbnail;
 	import com.graphics.gallery.ScrollableGallery;
 	import com.graphics.gallery.SimpleGallery;
 	import com.graphics.gallery.StackGalleryTypes;
+	import com.graphics.gallery.StepSimpleGallery;
+	import com.graphics.gallery.Thumbnail;
+	import com.graphics.gallery.ThumbnailEvent;
+	import com.graphics.gallery.ThumbnailEventType;
 	import com.ui.controllers.mvc.fbpicture.BasicFBPicturePickerStates;
 	import com.ui.controllers.mvc.interfaces.IController;
 	import com.ui.controllers.mvc.interfaces.IModel;
 	import com.ui.controllers.mvc.interfaces.IView;
 	
+	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.display.MovieClip;
 	import flash.display.SimpleButton;
@@ -21,13 +27,15 @@ package net.ui.mvc.userpicture.views {
 	
 	import net.core.EtniaFacebookGraph;
 	import net.ui.mvc.fbpicture.BasicFriendsFBGraphPicturePickerView;
+	import net.ui.mvc.fbpicture.FBGraphPicturePickerController;
 	import net.ui.mvc.userpicture.graphics.BigAlbumGraphThumbnail;
 	import net.ui.mvc.userpicture.graphics.SmallGraphThumbnail;
 
 	public class StandardFBGraphPicturePickerView extends BasicFriendsFBGraphPicturePickerView implements IView {
 		
-		protected var _bigGallery:ScrollableGallery;
-		protected var _smallGallery:ScrollableGallery;
+		protected var _bigGallery:StepSimpleGallery;
+		protected var _albumsGallery:StepSimpleGallery;
+		protected var _smallGallery:StepSimpleGallery;
 		protected var _galleryX:Number = 135;
 		protected var _galleryY:Number = 353;
 		protected var _galleryW:Number = 480;
@@ -36,7 +44,7 @@ package net.ui.mvc.userpicture.views {
 		protected var _deltaLoader:Point = new Point(0,0);
 		protected var _bigGalleryMinThumbsRender:int = 3;
 		protected var _smallGalleryMinThumbsRender:int = 5;
-		
+		protected var _albumsSelected:IThumbnail;
 		
 		public function set selectorColor($value:uint):void {
 			_selectorColor = $value;
@@ -115,6 +123,7 @@ package net.ui.mvc.userpicture.views {
 		
 		public function init():void {
 			showSelectButton(false);
+			titleTxf.text = "Selecciona tu álbum";
 			graphicMC.gotoAndStop("mine");
 			formController.clickHandler(getButtonID(myAlbumsButton));
 			showLoader();
@@ -139,11 +148,11 @@ package net.ui.mvc.userpicture.views {
 			enableTabButton(myAlbumsButton as SimpleButton, false);
 			enableTabButton(friendsAlbumsButton as SimpleButton);
 		}
-		
+
 		override protected function getButtonID($button:InteractiveObject):String {
 			switch($button) {
 				case termsChb:			return BasicFBPicturePickerStates.TERMS;
-				case cancelButton:		showLoader(false);	break;
+				case cancelButton:		showLoader(false);														break;
 				case selectButton: 		if(_model.currentState != BasicFBPicturePickerStates.PHOTO_SELECTED){
 											removeGalleries();
 											showLoader();
@@ -158,12 +167,14 @@ package net.ui.mvc.userpicture.views {
 		override protected function createGallery():SimpleGallery {
 			showLoader(false);
 			switch(_model.currentState) {
-				case BasicFBPicturePickerStates.ALBUMS_LOADED:
-																		if(fbPPModel.isMyAlbums) {
-																			titleTxf.text = EtniaFacebookGraph.getInstance().userData.name;
-																			return createBigGallery();
-																		}
-																		break;
+				case BasicFBPicturePickerStates.ALBUM_DATA_LOADED:
+								if(!_albumsGallery) {
+									return createAlbumsGallery(fbPPModel.albums);
+								} else {
+									_albumsGallery.addData(fbPPModel.albums.slice(fbPPModel.currentCover, fbPPModel.currentCover + 1));
+									return _albumsGallery;
+								}
+								break;
 				case BasicFBPicturePickerStates.FRIEND_ALBUM_LOADED:
 				case BasicFBPicturePickerStates.FRIENDS_LOADED:			
 																		if(!fbPPModel.isMyAlbums){
@@ -174,13 +185,18 @@ package net.ui.mvc.userpicture.views {
 			}
 			return super.createGallery();
 		}
-		
+
 		override protected function removeGalleries():void {
+			showSelectButton(false);
 			super.removeGalleries();
+			destructGallery(_albumsGallery);
 			destructGallery(_bigGallery);
 			destructGallery(_smallGallery);
+			_albumsGallery = null;
+			_bigGallery = null;
+			_smallGallery = null;
 		}
-		
+
 		override protected function showSelectButton($add:Boolean = true):void {
 			selectButton.visible = $add;
 			selectButton.alpha = $add ? 1 : 0;
@@ -215,6 +231,7 @@ package net.ui.mvc.userpicture.views {
 				case BasicFBPicturePickerStates.FRIENDS_LOADING:
 				case BasicFBPicturePickerStates.LOADING_ALBUMS:			showSelectButton(false);
 																		showLoader();				break;
+				case BasicFBPicturePickerStates.ALBUM_DATA_LOADED:		createGallery();			break;
 			}
 		}
 
@@ -252,67 +269,92 @@ package net.ui.mvc.userpicture.views {
 			var chb:MovieClip = ($event.currentTarget as MovieClip).checkBox;
 			chb.gotoAndStop(chb.currentFrame == 1 ? 2 : 1);
 		}
-		
-		protected function createBigGallery():ScrollableGallery {
-			if(!_bigGallery) {
-				addElement(graphicMC.left);
-				addElement(graphicMC.right);
-				graphicMC.left.visible = graphicMC.right.visible = true
-				_bigGallery = new ScrollableGallery(StackGalleryTypes.HORIZONTAL_GALLERY, 2);
-				_bigGallery.backgroundClass = SWCBigAlbumThumbnail;
-				_bigGallery.thumbClass =  BigAlbumGraphThumbnail;
-				_bigGallery.adjustImage = true;
-				_bigGallery.minThumbsRender = _bigGalleryMinThumbsRender;
-				_bigGallery.paddingX = 13;
-				_bigGallery.paddingY = 3;
-				_bigGallery.x = _galleryX;
-				_bigGallery.y = _galleryY;
-				_bigGallery.selectorColor = _selectorColor;
-				_bigGallery.visibleWidth = _galleryW;
-				_bigGallery.visibleHeight = 200;
-				_bigGallery.posArrows = false;
-				_bigGallery.left = graphicMC.left;
-				_bigGallery.right = graphicMC.right;
-				_bigGallery.loaderClass = _loaderClass;
-				_bigGallery.visible = true;
-				setMask();
-//				addContainerMask(_bigGallery);
-			}
-			return _bigGallery;
-		}
-		
-		protected function addContainerMask($container:Sprite):void {
-			var mask:Sprite = new Sprite();
-			mask.graphics.beginFill(0, .5);
-			mask.graphics.drawRect(0, 0, _galleryW, 300);
-			addElement(mask);
-			$container.mask = mask;
+
+		protected function createAlbumsGallery($data:Array):SimpleGallery {
+			removeGalleries();
+			_albumsGallery = new StepSimpleGallery(2, -1);
+//			_albumsGallery.graphicScroll = graphicMC.albumScroll;
+			_albumsGallery.thumbClass = BigAlbumGraphThumbnail;
+			_albumsGallery.backgroundClass = SWCBigAlbumThumbnail;
+			_albumsGallery.adjustImage = true;
+			_albumsGallery.x = _galleryX;
+			_albumsGallery.y = _galleryY;
+			_albumsGallery.left = graphicMC.left;
+			_albumsGallery.right = graphicMC.right;
+			_albumsGallery.visibleArea = 445;
+			_albumsGallery.mask = getGalleryMask(_albumsGallery.x - 5, _albumsGallery.y - 5);
+			addListener(_albumsGallery, ThumbnailEventType.ON_THUMBNAIL_READY, onThumbnailReady);
+			addListener(_albumsGallery, ThumbnailEventType.ON_PRESS, onGalleryThumbPress);
+			addElement(_albumsGallery);
+			_albumsGallery.initializeGallery($data.slice(fbPPModel.currentCover, fbPPModel.currentCover + 1));
+			return _albumsGallery;
 		}
 
-		protected function createSmallGallery():ScrollableGallery {
-			if(!_smallGallery) {
-				_smallGallery = new ScrollableGallery(StackGalleryTypes.HORIZONTAL_GALLERY, 2);
-				_smallGallery.backgroundClass = SWCSmallThumbnail;
-				_smallGallery.thumbClass = SmallGraphThumbnail;
-				_smallGallery.paddingX = 3;
-				_smallGallery.minThumbsRender = _smallGalleryMinThumbsRender;
-				_smallGallery.paddingY = 3;
-				_smallGallery.x = _galleryX;
-				_smallGallery.y = _galleryY;
-				_smallGallery.selectorColor = _selectorColor;
-				_smallGallery.adjustImage = true;
-				_smallGallery.visibleWidth = _galleryW;
-				_smallGallery.visibleHeight = 165;
-				_smallGallery.posArrows = false;
-				_smallGallery.left = graphicMC.left;
-				_smallGallery.right = graphicMC.right;
-				_smallGallery.loaderClass = _loaderClass;
-				_smallGallery.visible = true;
-//				addContainerMask(_smallGallery);
+		protected function getGalleryMask($x:Number, $y:Number, $width:Number = 445, $height:Number = 210):DisplayObject {
+			var graphicMask:Sprite = new Sprite();
+			graphicMask.graphics.beginFill(0, .5);
+			graphicMask.graphics.drawRect(0, 0, $width, $height);
+			graphicMask.graphics.endFill();
+			graphicMask.x = $x;
+			graphicMask.y = $y;
+			addElement(graphicMask);
+			return graphicMask;
+		}
+
+		protected function onThumbnailReady($event:Event):void {
+			if(fbPPModel.currentState == BasicFBPicturePickerStates.ALBUMS_LOADED) {
+				addListener(_albumsGallery, ThumbnailEventType.ON_THUMBNAIL_READY, onThumbnailReady, false);
+				return;
 			}
+			(formController as FBGraphPicturePickerController).getNextCoverAlbum();
+		}
+
+		protected function createBigGallery():SimpleGallery {
+			removeGalleries();
+			_bigGallery = new StepSimpleGallery(2, -1);
+			_bigGallery.backgroundClass = SWCBigAlbumThumbnail;
+			_bigGallery.thumbClass =  BigAlbumGraphThumbnail;
+			_bigGallery.adjustImage = true;
+			_bigGallery.minThumbsRender = _bigGalleryMinThumbsRender;
+			_bigGallery.paddingX = 13;
+			_bigGallery.paddingY = 3;
+			_bigGallery.x = _galleryX;
+			_bigGallery.y = _galleryY;
+			_bigGallery.visibleArea = 445;
+			_bigGallery.left = graphicMC.left;
+			_bigGallery.right = graphicMC.right;
+			_bigGallery.mask = getGalleryMask(_bigGallery.x - 5, _bigGallery.y - 5);
+			_bigGallery.loaderClass = _loaderClass;
+			_bigGallery.visible = true;
+			return _bigGallery;
+		}
+
+		protected function onGalleryAlbumThumbPress($event:ThumbnailEvent):void {
+			_albumsSelected = $event.thumb;
+			_model.setState(BasicFBPicturePickerStates.ALBUM_SELECTED);
+			super.onGalleryThumbPress($event);
+		}
+
+		protected function createSmallGallery():SimpleGallery {
+			removeGalleries();
+			_smallGallery = new StepSimpleGallery(2, -1);
+			_smallGallery.backgroundClass = SWCSmallThumbnail;
+			_smallGallery.thumbClass = SmallGraphThumbnail;
+			_smallGallery.paddingX = 3;
+			_smallGallery.minThumbsRender = _smallGalleryMinThumbsRender;
+			_smallGallery.paddingY = 3;
+			_smallGallery.x = _galleryX;
+			_smallGallery.y = _galleryY;
+			_smallGallery.adjustImage = true;
+			_smallGallery.visibleArea = 445;
+			_smallGallery.left = graphicMC.left;
+			_smallGallery.right = graphicMC.right;
+			_smallGallery.loaderClass = _loaderClass;
+			_smallGallery.mask = getGalleryMask(_smallGallery.x - 5, _smallGallery.y - 5);
+			_smallGallery.visible = true;
 			return _smallGallery;
 		}
-		
+
 		protected function showLoader($add:Boolean = true):void {
 			if(!_loader){
 				_loader = new _loaderClass();

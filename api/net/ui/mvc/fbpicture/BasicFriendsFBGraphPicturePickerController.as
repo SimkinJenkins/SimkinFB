@@ -27,6 +27,7 @@ package net.ui.mvc.fbpicture {
 				switch(_model.currentState){
 					case BasicFBPicturePickerStates.FRIEND_ALBUM_LOADED:
 					case BasicFBPicturePickerStates.ALBUM_SELECTED:
+					case BasicFBPicturePickerStates.ALBUM_DATA_LOADED:
 						if(fbPPModel.currentFriend){
 							_model.setState(BasicFBPicturePickerStates.FRIENDS_ALBUMS_BTN);
 							$ID = BasicFBPicturePickerStates.FRIENDS_ALBUMS_BTN;
@@ -92,13 +93,12 @@ package net.ui.mvc.fbpicture {
 		protected function friendAlbumContentLoaded($result:Object, $fail:Object):void{
 			if($result) {
 				fbPPModel.friendAlbums = new Array();
-				_currentCover = 0;
 				fbPPModel.currentCover = 0;
 				for(var i:uint = 0; i < $result.length; i++) {
 					fbPPModel.friendAlbums.push(new AlbumData($result[i]));
 				}
-				if(fbPPModel.friendAlbums[_currentCover]){
-					getFriendsAlbumCover(fbPPModel.friendAlbums[_currentCover]);
+				if(fbPPModel.friendAlbums[fbPPModel.currentCover]){
+					getFriendsAlbumCover(fbPPModel.friendAlbums[fbPPModel.currentCover]);
 				}else{
 					_model.setError("Tu amigo no permite ingresar a sus álbumes");
 					_model.setState(BasicFBPicturePickerStates.FRIENDS_LOADED);
@@ -119,7 +119,7 @@ package net.ui.mvc.fbpicture {
 		
 		protected function onGetFriendsAlbumCover($result:Object, $fail:Object):void {
 			if($result) {
-				(fbPPModel.friendAlbums[_currentCover] as AlbumData).coverDetail = new PhotoData($result);
+				(fbPPModel.friendAlbums[fbPPModel.currentCover] as AlbumData).coverDetail = new PhotoData($result);
 				getNextCoverFriendsAlbum();
 			} else {
 				_model.setError("Error al pedir las portadas de los álbumes");
@@ -128,10 +128,9 @@ package net.ui.mvc.fbpicture {
 		}
 		
 		protected function getNextCoverFriendsAlbum():void {
-			if(_currentCover < fbPPModel.friendAlbums.length - 1 && !fbPPModel.isMyAlbums) {
-				_currentCover++;
+			if(fbPPModel.currentCover < fbPPModel.friendAlbums.length - 1 && !fbPPModel.isMyAlbums) {
 				fbPPModel.currentCover++;
-				getFriendsAlbumCover(fbPPModel.friendAlbums[_currentCover]);
+				getFriendsAlbumCover(fbPPModel.friendAlbums[fbPPModel.currentCover]);
 			} else {
 				_model.setState(BasicFBPicturePickerStates.FRIEND_ALBUM_LOADED);
 			}

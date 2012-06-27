@@ -37,7 +37,11 @@ package net.ui.mvc.userpicture.views {
 		protected var _loaderClass:Class = GraphicInfinitLoader;
 		protected var _bigGalleryMinThumbsRender:int = 3;
 		protected var _smallGalleryMinThumbsRender:int = 8;
-		
+
+		public function get viewFB():StandardFBGraphPicturePickerView {
+			return _viewFB
+		}
+
 		public function set bigGalleryMinThumbsRender($value:int):void {
 			_bigGalleryMinThumbsRender = $value;
 		}
@@ -122,6 +126,9 @@ package net.ui.mvc.userpicture.views {
 		override public function destructor():void {
 			if(_currentSubView) {
 				_currentSubView.destructor();
+			}
+			if(_viewFB) {
+				_viewFB.destructor();
 			}
 			super.destructor();
 			addListener(_model, Event.CHANGE, stateUpdate, false);
